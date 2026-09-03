@@ -93,7 +93,7 @@ function initNavigation() {
 }
 
 // --- TELEMETRY SIMULATOR & CYCLE ---
-function runTelemetryCycle() {
+async function runTelemetryCycle() {
   // 1. Calculate Gate Discharge Effect
   if (state.gateOpenPercent > 0) {
     const dischargeEffect = (state.gateOpenPercent / 100) * 0.45;
@@ -114,10 +114,23 @@ function runTelemetryCycle() {
     state.riseRate = parseFloat(((state.waterLevel - prevWater) * 12).toFixed(2));
   }
 
-  // 3. Run AI/ML Prediction Pipeline
-  evaluateMLPrediction();
+  // 3. Post to Flask REST API Backend & run ML inference if connected
+  if (typeof isBackendOnline !== 'undefined' && isBackendOnline) {
+    const apiRes = await apiPostSensorData(state.waterLevel, state.rainfall, state.riseRate);
+    if (apiRes && apiRes.status === 'success') {
+      state.riskLevel = apiRes.risk_level;
+      state.riskProbability = apiRes.probability;
+      state.tCriticalDisplay = apiRes.t_critical;
+      state.tCriticalHours = apiRes.t_critical_hours;
+    } else {
+      evaluateMLPrediction();
+    }
+  } else {
+    // 3b. Fallback Client ML Heuristic Engine
+    evaluateMLPrediction();
+  }
 
-  // 4. Update Database Store
+  // 4. Update Database Store / Memory History
   const timestamp = new Date().toLocaleTimeString();
   const record = {
     time: timestamp,
@@ -126,7 +139,7 @@ function runTelemetryCycle() {
     riseRate: parseFloat(state.riseRate.toFixed(2)),
     riskLevel: state.riskLevel,
     riskProbability: state.riskProbability,
-    tCritical: state.tCriticalHours !== null ? state.tCriticalHours.toFixed(1) + 'h' : 'N/A'
+    tCritical: state.tCriticalDisplay || (state.tCriticalHours !== null ? state.tCriticalHours.toFixed(1) + 'h' : 'N/A')
   };
 
   state.history.push(record);
@@ -301,7 +314,10 @@ function updateUI() {
   document.getElementById('valProbability').textContent = state.riskProbability + '%';
   const tCritElem = document.getElementById('valTCritical');
   if (tCritElem) {
-    if (state.tCriticalHours !== null && state.tCriticalHours > 0) {
+    if (state.tCriticalDisplay) {
+      tCritElem.textContent = state.tCriticalDisplay;
+      tCritElem.style.color = (state.riskLevel === 'CRITICAL' || state.riskLevel === 'HIGH RISK') ? 'var(--risk-critical)' : 'var(--text-main)';
+    } else if (state.tCriticalHours !== null && state.tCriticalHours > 0) {
       const hrs = Math.floor(state.tCriticalHours);
       const mins = Math.round((state.tCriticalHours - hrs) * 60);
       tCritElem.textContent = `${hrs}h ${mins}m`;
