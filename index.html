@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Dam Safety & Flood Risk AI Monitoring System</title>
+  <meta name="description" content="AI/ML powered smart dam safety monitoring, flood risk prediction, and automated emergency siren alert system prototype.">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <div class="brand-container">
+      <div class="brand-icon">🌊</div>
+      <div>
+        <h1 class="brand-title">
+          DAM MONITOR <span class="brand-badge">AI PRO</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="status-pill" id="systemStatus">
+        <span class="pulse-dot"></span>
+        <span>TELEMETRY STREAM LIVE</span>
+      </div>
+      <div class="time-display" id="currentTime">--:--:--</div>
+      <button class="btn btn-danger" id="btnToggleSiren" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+        🔔 SIREN MUTE/TEST
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="nav-tabs" role="tablist">
+    <button class="nav-btn active" data-tab="tab-dashboard">
+      📊 <span>Dashboard Overview</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-ml">
+      🧠 <span>AI/ML Risk Engine</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-history">
+      📈 <span>Historical Analytics</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-alerts">
+      🚨 <span>Alert & Gate Control</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-settings">
+      ⚙️ <span>System Settings</span>
+    </button>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-container">
+
+    <!-- TAB 1: DASHBOARD OVERVIEW -->
+    <section id="tab-dashboard" class="tab-content active">
+      
+      <!-- HERO METRICS GRID -->
+      <div class="metrics-grid">
+        <!-- Water Level Card -->
+        <div class="glass-card metric-card water-card">
+          <div class="metric-header">
+            <span class="metric-title">Water Reservoir Level</span>
+            <div class="metric-icon">🌊</div>
+          </div>
+          <div class="metric-value-container">
+            <span class="metric-value" id="valWaterLevel">68.5</span>
+            <span class="metric-unit">%</span>
+          </div>
+          <div class="metric-subtext">
+            <span>Capacity: 100.0m | Max H<sub>max</sub></span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="barWaterLevel" style="width: 68.5%; background-color: var(--primary);"></div>
+          </div>
+        </div>
+
+        <!-- Rainfall Intensity Card -->
+        <div class="glass-card metric-card rain-card">
+          <div class="metric-header">
+            <span class="metric-title">Rainfall Rate</span>
+            <div class="metric-icon">🌧️</div>
+          </div>
+          <div class="metric-value-container">
+            <span class="metric-value" id="valRainfall">18.0</span>
+            <span class="metric-unit">mm/hr</span>
+          </div>
+          <div class="metric-subtext">
+            <span>24h Accumulation: 42.4 mm</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 25%; background-color: #3b82f6;"></div>
+          </div>
+        </div>
+
+        <!-- Rate of Rise Card -->
+        <div class="glass-card metric-card rise-card">
+          <div class="metric-header">
+            <span class="metric-title">Rate of Water Rise</span>
+            <div class="metric-icon">📈</div>
+          </div>
+          <div class="metric-value-container">
+            <span class="metric-value" id="valRiseRate">+0.80</span>
+            <span class="metric-unit">%/hr</span>
+          </div>
+          <div class="metric-subtext">
+            <span>Formula: dh/dt (Hydraulic Surge)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 18%; background-color: #8b5cf6;"></div>
+          </div>
+        </div>
+
+        <!-- AI Risk Classification & T_critical Card -->
+        <div class="glass-card metric-card risk-card">
+          <div class="metric-header">
+            <span class="metric-title">AI Risk Prediction</span>
+            <div class="metric-icon">⚡</div>
+          </div>
+          <div style="margin-bottom: 0.5rem;">
+            <span class="risk-badge safe" id="valRiskBadge">SAFE</span>
+          </div>
+          <div class="metric-subtext" style="font-size: 0.85rem; justify-content: space-between; margin-top: 0.4rem;">
+            <span>Risk Score: <strong id="valProbability" class="mono">18%</strong></span>
+            <span>T<sub>critical</sub>: <strong id="valTCritical" class="mono">STABLE</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN DASHBOARD CONTENT GRID -->
+      <div class="dashboard-grid">
+        <!-- Live Graph Card -->
+        <div class="glass-card chart-card">
+          <div class="card-title-bar">
+            <div class="card-title-text">
+              <span>📉 Live Telemetry Stream (Water Level vs Rainfall)</span>
+            </div>
+            <span style="font-size:0.75rem; color:var(--text-dim);" class="mono">Sampling: 2000ms</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="liveChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Simulator Control & Playground Panel -->
+        <div class="glass-card control-panel">
+          <div class="card-title-text" style="margin-bottom: 0.5rem;">
+            <span>🕹️ IoT Telemetry Simulator & Presets</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            Test AI model inference by injecting simulated weather conditions or manipulating sensor inputs in real time.
+          </p>
+
+          <div class="preset-btn-group">
+            <button class="btn" id="btnPresetNormal">🟢 Normal Day</button>
+            <button class="btn" id="btnPresetWarning">🟡 Heavy Rain</button>
+            <button class="btn" id="btnPresetHigh">🟠 Flash Surge</button>
+            <button class="btn btn-danger" id="btnPresetCritical">🔴 Dam Overrun</button>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem;"></div>
+
+          <!-- Slider 1: Water Level -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Inject Water Level:</span>
+              <span class="mono">0% - 100%</span>
+            </div>
+            <input type="range" class="custom-range" id="rangeWater" min="10" max="99" value="68">
+          </div>
+
+          <!-- Slider 2: Rainfall -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Inject Rainfall Rate:</span>
+              <span class="mono">0 - 150 mm</span>
+            </div>
+            <input type="range" class="custom-range" id="rangeRain" min="0" max="150" value="18">
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: AI / ML PREDICTION ENGINE -->
+    <section id="tab-ml" class="tab-content">
+      <div class="glass-card" style="margin-bottom: 1.5rem;">
+        <div class="card-title-text" style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+          🧠 Random Forest & Decision Tree AI Classifier Pipeline
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 900px;">
+          The ML model ingests multi-sensor parameters ($X = [\text{Water Level}, \text{Rainfall}, \frac{dh}{dt}]$) to predict flood risk level, calculate probability, and compute time remaining before dam overrun.
+        </p>
+
+        <!-- Pipeline Flow Graphic -->
+        <div class="pipeline-flow">
+          <div class="flow-step">
+            <div class="step-number">STEP 01</div>
+            <div class="step-title">IoT Telemetry Ingestion</div>
+            <div class="step-desc">Sensors capture water head h(t), rainfall R(t), and battery level.</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number">STEP 02</div>
+            <div class="step-title">Rate of Rise Preprocessing</div>
+            <div class="step-desc">Derives continuous rate dh/dt = [h(t) - h(t-1)] / Δt.</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number">STEP 03</div>
+            <div class="step-title">Random Forest Classifier</div>
+            <div class="step-desc">Evaluates ensemble tree nodes across 100 decision trees.</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number">STEP 04</div>
+            <div class="step-title">Risk & T<sub>critical</sub> Calculation</div>
+            <div class="step-desc">Outputs Risk Class, Probability %, and T<sub>critical</sub> = (H<sub>max</sub> - h)/rate.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live ML Inference Inspector Card -->
+      <div class="glass-card">
+        <div class="card-title-text" style="margin-bottom: 1rem;">
+          🔍 Real-Time Inference Inspector
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">INPUT FEATURE VECTOR (X)</h4>
+            <ul style="list-style: none; font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.5rem;" class="mono">
+              <li>Water Level [x1]: <span id="mlInputWl" style="color:#ffffff;">68.5%</span></li>
+              <li>Rainfall Rate [x2]: <span id="mlInputRf" style="color:#ffffff;">18.0 mm</span></li>
+              <li>Rate of Rise [x3]: <span id="mlInputRr" style="color:#ffffff;">0.80 %/hr</span></li>
+            </ul>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h4 style="color: var(--risk-warning); margin-bottom: 0.75rem;">PREDICTED INFERENCE OUTPUT (Y)</h4>
+            <ul style="list-style: none; font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.5rem;" class="mono">
+              <li>Classified Risk: <span id="mlOutputRisk" style="color: var(--risk-safe); font-weight:700;">SAFE</span></li>
+              <li>Probability Score: <span id="mlOutputProb" style="color:#ffffff;">18%</span></li>
+              <li>Time to Critical Failure: <span id="mlOutputTcrit" style="color:#ffffff;">STABLE</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: HISTORICAL ANALYTICS -->
+    <section id="tab-history" class="tab-content">
+      <div class="glass-card chart-card" style="margin-bottom: 1.5rem;">
+        <div class="card-title-bar">
+          <div class="card-title-text">
+            <span>📈 Multi-Parameter Telemetry History</span>
+          </div>
+          <button class="btn btn-primary" id="btnExportCSV">
+            📥 Export Telemetry CSV
+          </button>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Telemetry Data Table -->
+      <div class="glass-card">
+        <div class="card-title-text" style="margin-bottom: 0.75rem;">
+          📋 Telemetry & Inference Audit Log
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Water Level</th>
+                <th>Rainfall</th>
+                <th>Rise Rate</th>
+                <th>Risk Level</th>
+                <th>Probability</th>
+                <th>T<sub>critical</sub></th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Dynamically populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ALERT & GATE CONTROL -->
+    <section id="tab-alerts" class="tab-content">
+      <div class="dashboard-grid">
+        
+        <!-- Emergency Controls Column -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          
+          <!-- Siren Control Box -->
+          <div class="glass-card siren-box" id="sirenBox">
+            <div>
+              <h3 style="font-size: 1.05rem; display:flex; align-items:center; gap:0.5rem;">
+                🚨 Audio Emergency Siren Synthesizer
+              </h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.25rem;">
+                Web Audio API synthesizer creates high-intensity frequency sweep when Critical status occurs.
+              </p>
+            </div>
+          </div>
+
+          <!-- Spillway Gate Control Box -->
+          <div class="glass-card">
+            <div class="card-title-text" style="margin-bottom: 0.75rem;">
+              💧 Spillway Gate Emergency Release Control
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Adjust spillway gate position to discharge reservoir volume and mitigate surge rise.
+            </p>
+
+            <div class="slider-group" style="margin-bottom: 1rem;">
+              <div class="slider-header">
+                <span>Spillway Gate Opening:</span>
+                <span class="mono" id="valGateOpen" style="font-weight:700; color:var(--primary);">0%</span>
+              </div>
+              <input type="range" class="custom-range" id="rangeGate" min="0" max="100" value="0">
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 0.75rem 1rem; border-radius: var(--radius-md); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.82rem; color:var(--text-muted);">Calculated Discharge Rate (Q):</span>
+              <span class="mono" id="valGateFlow" style="font-weight:700; color:var(--primary); font-size:1.1rem;">0 m³/s</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SMS Terminal & Dispatch Log Column -->
+        <div class="glass-card">
+          <div class="card-title-text" style="margin-bottom: 0.75rem;">
+            📱 Automated SMS & Notification Dispatch Log
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Simulated GSM Gateway sending SMS alerts to key emergency authorities & downstream residents.
+          </p>
+
+          <div class="terminal-window" id="smsTerminal">
+            <div class="log-line"><span class="log-time">[00:00:01]</span> GSM Gateway Initialized. Ready for alert dispatch.</div>
+            <div class="log-line"><span class="log-time">[00:00:02]</span> Recipients registered: +91 98765 43210 (Disaster Mgmt Authority), +91 98765 12345 (Dam Engineer).</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 5: SYSTEM SETTINGS & THRESHOLDS -->
+    <section id="tab-settings" class="tab-content">
+      <div class="glass-card" style="max-width: 700px;">
+        <div class="card-title-text" style="font-size: 1.1rem; margin-bottom: 1rem;">
+          ⚙️ Risk Threshold & System Settings
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="slider-group">
+            <label style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">Warning Risk Threshold (% Water Level)</label>
+            <input type="number" id="threshWarning" value="80" class="btn" style="text-align:left; background:rgba(0,0,0,0.3);">
+          </div>
+
+          <div class="slider-group">
+            <label style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">High Risk Threshold (% Water Level)</label>
+            <input type="number" id="threshHigh" value="90" class="btn" style="text-align:left; background:rgba(0,0,0,0.3);">
+          </div>
+
+          <div class="slider-group">
+            <label style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">Critical Risk Threshold (% Water Level)</label>
+            <input type="number" id="threshCritical" value="95" class="btn" style="text-align:left; background:rgba(0,0,0,0.3);">
+          </div>
+
+          <button class="btn btn-primary" id="btnSaveThresholds" style="margin-top: 0.5rem;">
+            💾 Save Threshold Parameters
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODERN HTML5 CRITICAL ALERT DIALOG MODAL -->
+  <dialog id="criticalModal" class="alert-dialog" closedby="any" aria-labelledby="dialogCriticalTitle">
+    <div style="text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem; animation: pulse-ring 1s infinite;">🔴</div>
+      <h2 id="dialogCriticalTitle" style="color: #ef4444; font-size: 1.5rem; margin-bottom: 0.5rem;">
+        CRITICAL DAM OVERRUN ALERT
+      </h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Water Level has exceeded critical threshold! Emergency sirens activated and SMS dispatch sent to Disaster Response Teams.
+      </p>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button class="btn btn-danger" id="btnCloseModal">
+          ACKNOWLEDGE & MUTE SIREN
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Smart Dam Safety & Flood Risk AI Monitoring System Prototype &bull; Designed & Built with Vanilla HTML5, CSS3, JS & Chart.js</p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
