@@ -19,7 +19,7 @@ The project is structured into two primary components:
 │              ▼                                            │
 │  [ Python Flask REST API (Port 5001) ]                    │
 │      ├── SQLite Database Layer (telemetry, alerts)        │
-│      └── Random Forest ML Classifier (Risk & T_critical)   │
+│      └── Random Forest ML Classifier (Risk & T_critical)  │
 │              │                                            │
 │              ├─────────────────────────┐                  │
 │              ▼                         ▼                  │
@@ -127,6 +127,8 @@ The server will start at `http://localhost:5001`.
 ### 5. Access the Operator Monitoring Console
 Navigate to `http://localhost:5001/` in your web browser.
 The Flask backend will launch at `http://localhost:5001` and automatically initialize the database schema and seed settings.
+
+          OR
 
 ### 5. Launch Dashboard
 Open `http://localhost:5001` in your web browser or open `index.html` directly. The top header will display **`FLASK REST API & ML ACTIVE`** when connected.
