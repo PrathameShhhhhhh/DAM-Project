@@ -109,7 +109,7 @@ python backend/app.py
 The Flask backend will launch at `http://localhost:5001` and automatically initialize the database schema and seed settings.
 
 ### 5. Launch Dashboard
-Open `http://localhost:5000` in your web browser or open `index.html` directly. The top header will display **`FLASK REST API & ML ACTIVE`** when connected.
+Open `http://localhost:5001` in your web browser or open `index.html` directly. The top header will display **`FLASK REST API & ML ACTIVE`** when connected.
 
 ---
 
