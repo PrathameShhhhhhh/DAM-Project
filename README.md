@@ -1,129 +1,198 @@
-# Smart Dam Safety & Flood Risk AI Monitoring System (DAM MONITOR AI PRO)
+# Reservoir Hydraulic Telemetry & Flood Early Warning System
 
-An end-to-end software platform for real-time dam safety monitoring, flood risk prediction using Machine Learning, persistent telemetry logging, and automated emergency siren/alert dispatches.
+An end-to-end telemetry and disaster management platform for dam safety monitoring, hydrodynamic flood risk classification, automated siren broadcast, and citizen early warnings.
+
+The project is structured into two primary components:
+- **Server Side**: Telemetry ingestion, machine learning risk classification, relational SQLite persistence, Flask REST API, and the Operator Monitoring Console.
+- **Client Side**: Minimalist, multi-lingual Community Flood Alert Web Application for citizens and local authorities.
 
 ---
 
-## 🏗️ System Architecture & Workflow
+## System Architecture
 
 ```
-[ IoT Sensors / Simulator ] 
-           │
-           ▼ (HTTP POST /api/sensor-data)
-┌─────────────────────────────────────────┐
-│           Python Flask Backend          │
-│   - Sensor Data Ingestion               │
-│   - SQLite / MySQL Data Storage         │
-│   - ML Ingestion & T_critical Calculation│
-└────────────────────┬────────────────────┘
-                     │
-           ┌─────────┴─────────┐
-           ▼                   ▼
-┌──────────────────┐   ┌───────────────────────────┐
-│ AI/ML Risk Model │   │     SQLite Database       │
-│  (Random Forest) │   │ (sensor_data, predictions,│
-│  [ml/model.pkl]  │   │  alerts, settings)        │
-└──────────────────┘   └───────────────────────────┘
-                     │
-                     ▼ (REST API JSON Response)
-┌─────────────────────────────────────────┐
-│     Interactive HTML5/JS Dashboard      │
-│  - Live Telemetry Stream Charts         │
-│  - AI Risk Engine & T_critical Display  │
-│  - Emergency Siren & Alert Log          │
-└─────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                    SERVER SIDE ENGINE                     │
+│                                                           │
+│  [ IoT Sensors / Simulator ]                              │
+│              │ (POST /api/sensor-data)                    │
+│              ▼                                            │
+│  [ Python Flask REST API (Port 5001) ]                    │
+│      ├── SQLite Database Layer (telemetry, alerts)        │
+│      └── Random Forest ML Classifier (Risk & T_critical)   │
+│              │                                            │
+│              ├─────────────────────────┐                  │
+│              ▼                         ▼                  │
+│   [ Operator Dashboard ]      [ REST API Endpoints ]      │
+└────────────────────────────────────────┼──────────────────┘
+                                         │ JSON Stream / Telemetry
+                                         ▼
+┌───────────────────────────────────────────────────────────┐
+│                    CLIENT SIDE APP                        │
+│                                                           │
+│  [ Citizen Flood Alert Application ]                      │
+│      ├── Citizen Auth (Mobile + OTP Sign In / Sign Up)    │
+│      ├── Live Water Level & Universal Safety Badges       │
+│      ├── Location-Based Rainfall & Weather Forecast       │
+│      ├── Multi-Lingual Switcher (English, Hindi, Marathi) │
+│      └── Audio Emergency Siren Synthesizer & Toggles      │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 👥 4-Person Role Division
-
-1. **Person 1 (Data & IoT Simulation - `data/`)**: Synthetic IoT data generator (`generate_data.py`), dataset cleaning (`preprocess.py`), and CSV storage (`dam_data.csv`).
-2. **Person 2 (AI / Machine Learning - `ml/`)**: Model training pipeline (`train_model.py`), Random Forest classification model (`model.pkl`), prediction engine (`predict.py`), time-to-critical equation ($T_{\text{critical}} = \frac{H_{\text{max}} - h(t)}{dh/dt}$), and evaluation metrics (`evaluate.py`).
-3. **Person 3 (Backend & Database - `backend/`, `database/`)**: Flask REST API server (`app.py`), route blueprints (`sensor.py`, `prediction.py`, `alerts.py`, `settings.py`), and SQLite/MySQL database layer (`database.py`, `schema.sql`).
-4. **Person 4 (Frontend Dashboard - `index.html`, `css/`, `js/`)**: Operational monitoring interface, Chart.js telemetry charts, simulator playground, Web Audio siren synthesizer, and `js/api.js` backend integration.
-
----
-
-## 📂 Project Directory Structure
+## Directory Structure
 
 ```
 DAM Project/
-├── index.html                      # Main Dashboard UI
-├── css/
-│   └── style.css                   # Glassmorphic Styling & Layout
-├── js/
-│   ├── api.js                      # Backend API Integration Client
-│   └── app.js                      # Core Dashboard Application Logic
-├── data/
-│   ├── generate_data.py            # IoT Sensor Data Generator
-│   ├── preprocess.py               # Data Preprocessing Script
-│   └── dam_data.csv                # Generated Sensor Telemetry CSV
-├── ml/
-│   ├── train_model.py              # Scikit-Learn Model Trainer
-│   ├── predict.py                  # Live Risk & T_critical Prediction Engine
-│   ├── evaluate.py                 # Model Accuracy Evaluation Script
-│   └── model.pkl                   # Trained Random Forest Model Artifact
-├── backend/
-│   ├── app.py                      # Flask REST API Application Entrypoint
-│   ├── config.py                   # App Configuration Settings
-│   ├── database.py                 # SQLite Database Abstraction Layer
-│   ├── dam_monitor.db              # SQLite Database File
-│   └── routes/
-│       ├── sensor.py               # Telemetry & History Endpoints
-│       ├── prediction.py           # Prediction Endpoints
-│       ├── alerts.py               # Siren & Alert Log Endpoints
-│       └── settings.py             # Safety Threshold Endpoints
-├── database/
-│   ├── schema.sql                  # Database DDL Schema (SQLite & MySQL)
-│   └── seed.sql                    # Initial Database Seed Script
-├── requirements.txt                # Python Dependencies
-├── .env.example                    # Environment Template
-└── README.md                       # Project Documentation
+├── server side/                     # Server-Side Backend & ML Engine
+│   ├── backend/
+│   │   ├── app.py                   # Flask REST API Application Entrypoint
+│   │   ├── config.py                # Server Configuration (Port 5001, Host)
+│   │   ├── database.py              # SQLite Database Abstraction Layer
+│   │   ├── dam_monitor.db           # SQLite Database Store
+│   │   └── routes/
+│   │       ├── sensor.py            # Sensor Data & History Endpoints
+│   │       ├── prediction.py        # ML Prediction Endpoints
+│   │       ├── alerts.py            # Emergency Siren & Alert Log Endpoints
+│   │       └── settings.py          # Safety Thresholds Endpoints
+│   ├── data/
+│   │   ├── generate_data.py         # Synthetic Hydrological Telemetry Generator
+│   │   ├── preprocess.py            # Dataset Cleaning & Feature Preprocessing
+│   │   └── dam_data.csv             # Generated Telemetry Dataset
+│   ├── ml/
+│   │   ├── train_model.py           # Random Forest Classifier Training Pipeline
+│   │   ├── predict.py               # Live Inference & T_critical Engine
+│   │   ├── evaluate.py              # Model Evaluation & Feature Importances
+│   │   └── model.pkl                # Exported Scikit-Learn Model Artifact
+│   ├── database/
+│   │   ├── schema.sql               # Database DDL Schema
+│   │   └── seed.sql                 # Initial Settings Seed Script
+│   ├── index.html                   # Operator Monitoring Console
+│   ├── css/ & js/                   # Operator Portal Styles & API Client
+│   ├── privacy.html & terms.html    # Operator Compliance Documents
+│   ├── favicon.svg                  # Vector Favicon Asset
+│   ├── requirements.txt             # Python Dependencies
+│   └── .env.example                 # Environment Variable Template
+│
+├── client side/                     # Citizen Community Flood Alert App
+│   ├── index.html                   # Main Community Mobile/Web App
+│   ├── css/
+│   │   └── style.css                # Minimalist, High-Legibility UI
+│   ├── js/
+│   │   ├── i18n.js                  # English / Hindi / Marathi Localization Dictionary
+│   │   └── app.js                   # Auth, Geolocation, Live Water Stream & Siren Logic
+│   ├── privacy.html                 # Citizen Privacy Policy
+│   ├── terms.html                   # Citizen Terms & Conditions
+│   └── favicon.svg                  # Community Favicon Asset
+│
+└── README.md                        # Unified Project Documentation
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## Server Side Setup & Execution
 
-### 1. Install Dependencies
-Ensure Python 3.8+ is installed, then run:
+### 1. Install Backend Dependencies
+Ensure Python 3.8+ is installed, then install required packages:
 ```bash
-pip install -r requirements.txt
+pip install -r "server side/requirements.txt"
 ```
 
 ### 2. Generate Sensor Dataset
+Generate synthetic telemetry records with hydrological noise and surge conditions:
 ```bash
-python data/generate_data.py
+python "server side/data/generate_data.py"
+```
+Output: `server side/data/dam_data.csv` (1,200 records).
+
+### 3. Train Machine Learning Model
+Train the Random Forest Classifier on feature matrix ($X = [\text{Water Level}, \text{Rainfall}, \frac{dh}{dt}]$):
+```bash
+python "server side/ml/train_model.py"
+```
+Output: `server side/ml/model.pkl` (97.5%+ test accuracy).
+
+Optional evaluation:
+```bash
+python "server side/ml/evaluate.py"
 ```
 
-### 3. Train AI / Machine Learning Model
+### 4. Start Flask REST API Server
 ```bash
-python ml/train_model.py
+python "server side/backend/app.py"
 ```
+The server will start at `http://localhost:5001`.
 
-### 4. Start Flask Backend REST API
-```bash
-python backend/app.py
-```
-The Flask backend will launch at `http://localhost:5000` and automatically initialize the database schema and seed settings.
-
-### 5. Launch Dashboard
-Open `http://localhost:5000` in your web browser or open `index.html` directly. The top header will display **`FLASK REST API & ML ACTIVE`** when connected.
+### 5. Access the Operator Monitoring Console
+Navigate to `http://localhost:5001/` in your web browser.
 
 ---
 
-## 🔌 REST API Endpoints
+## Server REST API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/health` | Server health check and backend status |
-| `GET` | `/api/current-data` | Latest sensor telemetry reading and ML prediction |
-| `POST` | `/api/sensor-data` | Submit new telemetry reading, run ML inference, store in DB, return risk assessment |
+| `GET` | `/health` | Server health check and system status |
+| `GET` | `/api/current-data` | Latest sensor telemetry reading and risk prediction |
+| `POST` | `/api/sensor-data` | Ingest sensor reading, run ML inference, persist to DB |
 | `GET` | `/api/history` | Historical sensor readings for telemetry charts |
 | `GET` | `/api/prediction` | Latest AI prediction state |
-| `POST` | `/api/predict` | On-demand ML inference for test parameters |
-| `GET` | `/api/alerts` | Fetch persistent alert and siren log history |
+| `POST` | `/api/predict` | On-demand ML inference for custom test parameters |
+| `GET` | `/api/alerts` | Fetch stored alert and siren dispatch history |
 | `POST` | `/api/alerts` | Trigger emergency alert or siren state |
 | `GET` | `/api/settings` | Fetch safety threshold settings |
 | `POST` | `/api/update-threshold` | Update safety, warning, and critical thresholds |
+
+---
+
+## Client Side Setup & Features
+
+The Client Side App is designed for everyday citizens, downstream residents, and emergency response workers across all age groups.
+
+### Features Included
+
+1. **Simple Citizen Registration & Sign-In**:
+   - **Sign Up**: Full Name, 10-digit Mobile Number, simulated OTP verification with auto-fill helper.
+   - **Sign In**: Registered Mobile Number and OTP verification with persistent `localStorage` session.
+   - **Sign Out**: Instant profile logout returning to the sign-in screen.
+
+2. **Multilingual Translation Switch (English, Hindi, Marathi)**:
+   - Instant header language switcher: `EN`, `हिंदी` (Hindi), and `मराठी` (Marathi).
+   - Dynamic localization dictionary (`client side/js/i18n.js`) translating all titles, advisories, weather reports, labels, and emergency dialogs.
+
+3. **Live Water Level Monitor**:
+   - Visual water gauge with clear percentage readout (e.g. `68.5%`) and fill progress bar.
+   - Tri-state universal safety badges: `SAFE` (Green), `MODERATE ALERT` (Amber), and `CRITICAL DANGER` (Red).
+   - Plain-language community advisories on river bank and downstream safety.
+
+4. **Location-Based Rainfall & Weather Prediction**:
+   - Integrates browser Geolocation API (`Detect Location`) with catchment basin identification (e.g., *Pune / Khadakwasla Basin*, *Nashik / Godavari Basin*, *Kolhapur / Panchganga Basin*, *Mumbai / Vaitarna Catchment*).
+   - 24-hour rain probability, expected precipitation rate (mm/hr), and localized flood hazard rating.
+
+5. **Acoustic Siren & Alert Switches**:
+   - On/Off toggle switch for **Acoustic Emergency Siren** (Web Audio API frequency sweep oscillator).
+   - On/Off toggle switch for **Screen Notification Alerts**.
+   - **Test Audio Siren** button allowing citizens to verify device audio output.
+
+6. **Notification Permissions & Emergency Helplines**:
+   - Top notification prompt requesting browser alert permissions.
+   - Emergency popup dialog displaying direct helpline numbers (*NDRF: 1077 / 112*, *Dam Control Room: +91 98765 43210*).
+
+### How to Run the Client App
+
+- **Option A (Served via Backend)**: Start the server and navigate to:
+  ```
+  http://localhost:5001/client/
+  ```
+- **Option B (Standalone / Direct)**: Open `client side/index.html` directly in any modern web browser.
+
+---
+
+## Design Standards & Compliance
+
+- **Aesthetic**: Grounded dark industrial theme in Cerulean (`#0ea5e9`), Slate (`#111827`), and standard operational indicators.
+- **Component Geometry**: Clean rectangular elements with subtle 4px to 6px border radii (zero pill buttons).
+- **Icons**: 100% inline vector SVGs (zero emoji icons).
+- **Typography**: Clear, standard punctuation (zero em dashes).
+- **Legal Compliance**: Dedicated [Privacy Policy](client%20side/privacy.html) and [Terms & Conditions](client%20side/terms.html) pages included on both portals.
