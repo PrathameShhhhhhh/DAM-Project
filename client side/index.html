@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dam Safety & Community Flood Alert App</title>
+  <meta name="description" content="Community flood safety monitor, live reservoir water level gauge, and localized rainfall alerts.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <a href="index.html" class="brand-container">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19V6L8 3H16L20 6V19H4Z"></path>
+          <path d="M8 3V19M16 3V19"></path>
+          <path d="M4 14C7 13 10 15 13 14C16 13 19 15 20 14"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">
+          <span data-i18n="app_title">DAM ALERT</span> 
+          <span class="brand-badge" data-i18n="app_badge">COMMUNITY</span>
+        </h1>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <!-- Multilingual Translation Buttons (English - Hindi - Marathi) -->
+      <div class="lang-selector-group" role="group" aria-label="Language Selector">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
+        <button class="lang-btn" data-lang="mr">मराठी</button>
+      </div>
+
+      <!-- User Profile Badge & Sign Out Button -->
+      <div class="user-profile-badge" id="userProfileBadge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span id="displayUserName">User</span>
+        <button class="btn btn-outline btn-sm" id="btnSignOut" style="padding: 0.2rem 0.4rem; font-size: 0.72rem;" data-i18n="sign_out">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="main-container">
+
+    <!-- NOTIFICATION PERMISSION BANNER -->
+    <div class="notice-banner" id="noticeBanner">
+      <div class="notice-content">
+        <div class="notice-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="notice-title" data-i18n="notice_title">Enable Emergency Alerts & Siren</div>
+          <div class="notice-desc" data-i18n="notice_desc">Receive instant acoustic siren sounds and popups during reservoir overflow risks.</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btnEnableNotifications" data-i18n="btn_enable_notifications">
+        Enable Alerts
+      </button>
+    </div>
+
+    <!-- SECTION 1: AUTHENTICATION & ONBOARDING (SIGN IN / SIGN UP) -->
+    <section id="authSection" class="app-section">
+      <div class="card auth-box">
+        <div class="auth-header">
+          <h2 id="authTitle" data-i18n="auth_signin_title">Citizen Sign In</h2>
+          <p id="authDesc" data-i18n="auth_signin_desc">Enter your registered mobile number and OTP to view live flood alerts.</p>
+        </div>
+
+        <!-- Name Field (Visible on Sign Up) -->
+        <div class="form-group" id="nameFormGroup" style="display: none;">
+          <label class="form-label" for="inputName" data-i18n="label_full_name">Full Name</label>
+          <input type="text" id="inputName" class="form-input" placeholder="e.g. John Doe" data-i18n-placeholder="placeholder_name">
+        </div>
+
+        <!-- Mobile Number Field -->
+        <div class="form-group">
+          <label class="form-label" for="inputMobile" data-i18n="label_mobile">Mobile Number</label>
+          <div class="input-with-button">
+            <input type="tel" id="inputMobile" class="form-input" placeholder="10-digit mobile number" maxlength="10" data-i18n-placeholder="placeholder_mobile">
+            <button class="btn btn-primary" id="btnSendOtp" style="white-space: nowrap;" data-i18n="btn_send_otp">
+              Send OTP
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulated OTP Banner -->
+        <div class="otp-simulation-pill" id="otpPill">
+          <span><strong data-i18n="otp_sent_notice">Simulated OTP sent:</strong> <span id="otpCodeDisplay" class="mono" style="font-size:1.1rem; font-weight:700;">8492</span></span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">(Auto-filled below)</span>
+        </div>
+
+        <!-- OTP Verification Field -->
+        <div class="form-group">
+          <label class="form-label" for="inputOtp" data-i18n="label_otp">Verification OTP</label>
+          <input type="text" id="inputOtp" class="form-input" placeholder="Enter 4-digit OTP" maxlength="4" data-i18n-placeholder="placeholder_otp">
+        </div>
+
+        <!-- Submit Button -->
+        <button class="btn btn-primary btn-block" id="btnSubmitAuth" style="margin-top: 0.5rem;" data-i18n="btn_signin">
+          Sign In to Dashboard
+        </button>
+
+        <!-- Toggle Sign In / Sign Up Link -->
+        <div class="auth-switch-link">
+          <a id="switchAuthMode" data-i18n="link_no_account">New user? Create an account</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: COMMUNITY FLOOD SAFETY DASHBOARD -->
+    <section id="dashboardSection" class="app-section active">
+
+      <!-- 1. LIVE WATER LEVEL MONITOR CARD -->
+      <div class="card water-monitor-card status-safe" id="waterMonitorCard">
+        <div class="card-title-row">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+            <span data-i18n="sec_water_title">Live Reservoir Water Level</span>
+          </div>
+          <span class="water-status-badge safe" id="waterStatusBadge" data-i18n="status_safe">SAFE</span>
+        </div>
+
+        <div class="gauge-grid">
+          <!-- Visual Percentage & Bar -->
+          <div class="gauge-visual-container">
+            <div class="water-percent-display" id="waterPercentDisplay">68.5%</div>
+            <div class="progress-track">
+              <div class="progress-bar" id="waterProgressBar" style="width: 68.5%; background-color: var(--status-safe);"></div>
+            </div>
+          </div>
+
+          <!-- Structured Details & Simple Advisory for All Age Groups -->
+          <div class="water-details-list">
+            <div class="detail-row">
+              <span class="detail-label" data-i18n="water_capacity_label">Reservoir Full Capacity:</span>
+              <span class="detail-value">100.0 Meters (H-Max)</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" data-i18n="water_inflow_label">Current Inflow Rate:</span>
+              <span class="detail-value" id="waterInflowDisplay">+0.80 %/hr</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" data-i18n="water_gate_label">Spillway Gate Status:</span>
+              <span class="detail-value" id="waterGateDisplay" data-i18n="gate_closed">Closed (0%)</span>
+            </div>
+            
+            <div class="community-advisory-box" id="communityAdvisory" data-i18n="advisory_safe">
+              Advisory: Reservoir water level is normal. Downstream river banks and roads are safe for travel.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. LOCALIZED RAINFALL & WEATHER PREDICTION CARD -->
+      <div class="card">
+        <div class="location-bar">
+          <div class="current-location-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span id="currentLocationText">Pune / Bhima Basin (Default)</span>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btnDetectLocation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+            <span data-i18n="detect_location">Detect Location</span>
+          </button>
+        </div>
+
+        <div class="forecast-grid">
+          <div class="forecast-item">
+            <div class="forecast-item-header" data-i18n="forecast_rain_chance">Rain Probability (24h)</div>
+            <div class="forecast-item-value" id="forecastRainChance">65%</div>
+            <div class="forecast-item-desc">Catchment Precipitation</div>
+          </div>
+
+          <div class="forecast-item">
+            <div class="forecast-item-header" data-i18n="forecast_precipitation">Expected Rainfall Rate</div>
+            <div class="forecast-item-value" id="forecastPrecipitation">18.0 mm/hr</div>
+            <div class="forecast-item-desc">Moderate Monsoon Rainfall</div>
+          </div>
+
+          <div class="forecast-item">
+            <div class="forecast-item-header" data-i18n="forecast_flood_risk">Localized Flood Hazard</div>
+            <div class="forecast-item-value" id="forecastHazard" style="color: var(--status-safe);" data-i18n="risk_low">Low / Normal</div>
+            <div class="forecast-item-desc">River Bank Inflow Status</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. EMERGENCY SIREN & ALERT SWITCHES CARD -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span data-i18n="sec_controls_title">Emergency Siren & Alert Controls</span>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btnTestAudioSiren">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <span data-i18n="btn_test_siren">Test Audio Siren</span>
+          </button>
+        </div>
+
+        <!-- Siren Switch -->
+        <div class="switch-control-row">
+          <div class="switch-info">
+            <h4 data-i18n="switch_siren_title">Acoustic Emergency Siren</h4>
+            <p data-i18n="switch_siren_desc">Plays loud sweeping audio siren on your device during critical dam overflow alerts.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleSirenSwitch" checked aria-label="Toggle Siren">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Notification Alerts Switch -->
+        <div class="switch-control-row">
+          <div class="switch-info">
+            <h4 data-i18n="switch_alerts_title">Screen Notification Alerts</h4>
+            <p data-i18n="switch_alerts_desc">Displays urgent popup warning messages and evacuation instructions.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleAlertsSwitch" checked aria-label="Toggle Alerts">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- EMERGENCY POPUP MODAL DIALOG -->
+  <dialog id="emergencyDialog" class="emergency-dialog" aria-labelledby="emergencyDialogTitle">
+    <div class="emergency-header">
+      <div class="emergency-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <h2 id="emergencyDialogTitle" class="emergency-title" data-i18n="modal_title">
+        CRITICAL DAM OVERRUN ALERT
+      </h2>
+    </div>
+
+    <div class="emergency-body" data-i18n="modal_desc">
+      Reservoir water level has crossed critical safety thresholds. Immediate flood warning issued for downstream sectors.
+    </div>
+
+    <div class="emergency-helplines">
+      <div style="font-weight: 700; margin-bottom: 0.25rem; color: var(--text-main);" data-i18n="helpline_title">
+        Emergency Helplines:
+      </div>
+      <div data-i18n="helpline_ndrf">Disaster Response: 1077 / 112</div>
+      <div data-i18n="helpline_dam">Dam Control Room: +91 98765 43210</div>
+    </div>
+
+    <div style="display: flex; justify-content: center;">
+      <button class="btn btn-danger btn-block" id="btnCloseEmergencyModal" data-i18n="btn_acknowledge">
+        Acknowledge & Mute Siren
+      </button>
+    </div>
+  </dialog>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div data-i18n="footer_text">
+        Dam Safety & Community Flood Warning System Prototype
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html" data-i18n="footer_privacy">Privacy Policy</a>
+        <a href="terms.html" data-i18n="footer_terms">Terms & Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

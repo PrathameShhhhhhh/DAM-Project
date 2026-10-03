@@ -7,7 +7,7 @@ import sys
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-# Add root directory to python path
+# Add parent directory to python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.config import Config
@@ -34,7 +34,7 @@ def create_app():
     app.register_blueprint(alerts_bp)
     app.register_blueprint(settings_bp)
 
-    client_side_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../client side"))
+    client_side_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../client side"))
 
     @app.route("/")
     def serve_frontend():
