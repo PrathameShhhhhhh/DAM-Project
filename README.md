@@ -1,10 +1,23 @@
 # Reservoir Hydraulic Telemetry & Flood Early Warning System
+**Community Engagement Project (CEP) | MMCOE & SKNCOE**
 
 An end-to-end telemetry and disaster management platform for dam safety monitoring, hydrodynamic flood risk classification, automated siren broadcast, and citizen early warnings.
 
-The project is structured into two primary components:
-- **Server Side**: Telemetry ingestion, machine learning risk classification, relational SQLite persistence, Flask REST API, and the Operator Monitoring Console.
-- **Client Side**: Minimalist, multi-lingual Community Flood Alert Web Application for citizens and local authorities.
+### Academic Institutions
+- **MMCOE**: Marathwada Mitra Mandal's College of Engineering, Pune
+- **SKNCOE**: Smt. Kashibai Navale College of Engineering, Pune
+
+### Engineering & Developer Team (Verified Administrators)
+1. **Aarya Pawale** (Lead System Engineer)
+2. **Ishita Nevase** (ML / Hydrodynamic Risk Analytics)
+3. **Hansika Mohol** (Hydrological Data & Simulation)
+4. **Aryan Nagare** (Backend Architecture & Database Layer)
+5. **Prathamesh Rane** (Telemetry Operations & Integration)
+
+### Dual-Portal Access Architecture & Security Model
+- **Central Landing Page (`index.html`)**: Gateway presenting project overview, academic credentials, and dual access paths.
+- **Server Side (Admin Portal)**: Restricted to the 5 verified engineers above. Admins have comprehensive access to all operator dashboards, threshold calibrations, ML pipelines, and client views.
+- **Client Side (Citizen App)**: Publicly accessible to downstream residents and communities via Mobile Number and OTP verification, restricted strictly to citizen-facing features with zero server administrative access.
 
 ---
 
