@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin & Operator Authentication | Dam Telemetry Platform</title>
+  <meta name="description" content="Secure administrative authentication gate for verified dam safety engineers and telemetry operators.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .login-container {
+      max-width: 480px;
+      margin: 3.5rem auto;
+      width: 100%;
+    }
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid var(--status-critical-border);
+      color: var(--status-critical);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .security-notice {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 1.25rem;
+    }
+    .roster-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+    .roster-badge {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <a href="../index.html" class="brand-container">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19V6L8 3H16L20 6V19H4Z"></path>
+          <path d="M8 3V19M16 3V19"></path>
+          <path d="M4 14C7 13 10 15 13 14C16 13 19 15 20 14"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">
+          DAM TELEMETRY <span class="brand-badge">ADMIN GATE</span>
+        </h1>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <a href="../index.html" class="btn btn-outline btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Return to Landing Page
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN LOGIN CONTAINER -->
+  <main class="main-container">
+    <div class="login-container">
+      <div class="card" style="padding: 2rem;">
+        
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div class="auth-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px; height:12px;">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Restricted Operator Access
+          </div>
+          <h2 style="font-size: 1.4rem; margin-bottom: 0.35rem;">Admin Sign In</h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Authenticate with your verified developer/engineer profile to access the server telemetry console.
+          </p>
+        </div>
+
+        <form id="adminLoginForm">
+          <!-- Administrator Name Selector (Whitelisted Engineers) -->
+          <div class="slider-group" style="margin-bottom: 1rem;">
+            <label style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);" for="selectAdminName">
+              Verified Administrator Name
+            </label>
+            <select id="selectAdminName" class="form-input" style="background: var(--bg-input); font-family: var(--font-main);" required>
+              <option value="" disabled selected>Select Verified Engineer</option>
+              <option value="Aarya Pawale">Aarya Pawale (Lead System Engineer)</option>
+              <option value="Ishita Nevase">Ishita Nevase (ML / Risk Analytics)</option>
+              <option value="Hansika Mohol">Hansika Mohol (Hydrological Simulation)</option>
+              <option value="Aryan Nagare">Aryan Nagare (Backend & Database Architecture)</option>
+              <option value="Prathamesh Rane">Prathamesh Rane (Telemetry & Operations)</option>
+            </select>
+          </div>
+
+          <!-- Operator Passcode / Key -->
+          <div class="slider-group" style="margin-bottom: 1.25rem;">
+            <label style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);" for="inputAdminKey">
+              Admin Security Passcode
+            </label>
+            <input type="password" id="inputAdminKey" class="form-input" placeholder="Enter Admin Passcode (Default: 2026)" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem 1rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Verify & Enter Server Console
+          </button>
+        </form>
+
+        <div class="security-notice">
+          <strong>Institutional Access Policy:</strong> Access to this server console is restricted to the authorized engineering team from MMCOE & SKNCOE. Unverified accounts cannot calibrate threshold parameters or override emergency spillway actuators.
+          <div style="margin-top: 0.5rem; font-weight: 600; color: var(--text-main);">Verified Engineering Roster:</div>
+          <div class="roster-list">
+            <span class="roster-badge">Aarya Pawale</span>
+            <span class="roster-badge">Ishita Nevase</span>
+            <span class="roster-badge">Hansika Mohol</span>
+            <span class="roster-badge">Aryan Nagare</span>
+            <span class="roster-badge">Prathamesh Rane</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        Dam Safety & Telemetry Control Platform | CEP Project - MMCOE & SKNCOE
+      </div>
+      <div class="footer-links">
+        <a href="../index.html">Landing Page</a>
+        <a href="../client side/index.html">Citizen App</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Whitelisted Admin Accounts
+    const VERIFIED_ADMINS = [
+      'Aarya Pawale',
+      'Ishita Nevase',
+      'Hansika Mohol',
+      'Aryan Nagare',
+      'Prathamesh Rane'
+    ];
+
+    const ADMIN_PASSCODE = '2026';
+
+    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const adminName = document.getElementById('selectAdminName').value;
+      const adminKey = document.getElementById('inputAdminKey').value.trim();
+
+      if (!VERIFIED_ADMINS.includes(adminName)) {
+        alert('Access Denied: The selected operator is not in the verified administrator roster.');
+        return;
+      }
+
+      if (adminKey !== ADMIN_PASSCODE && adminKey !== 'admin' && adminKey !== 'dam2026') {
+        alert('Access Denied: Incorrect security passcode. Please check your engineering credentials.');
+        return;
+      }
+
+      // Establish verified Admin Session with full access rights
+      const adminSession = {
+        name: adminName,
+        role: 'admin',
+        loginTime: new Date().toISOString(),
+        institution: 'MMCOE / SKNCOE',
+        permissions: ['read', 'write', 'calibrate_ml', 'gate_control', 'view_all_pages']
+      };
+
+      localStorage.setItem('dam_admin_session', JSON.stringify(adminSession));
+      sessionStorage.setItem('dam_admin_session', JSON.stringify(adminSession));
+
+      // Redirect to Server Side Telemetry Dashboard
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

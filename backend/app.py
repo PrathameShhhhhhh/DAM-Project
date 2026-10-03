@@ -7,7 +7,7 @@ import sys
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-# Add root directory to python path
+# Add parent directory to python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.config import Config
@@ -34,18 +34,32 @@ def create_app():
     app.register_blueprint(alerts_bp)
     app.register_blueprint(settings_bp)
 
-    client_side_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../client side"))
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    server_dir = os.path.abspath(os.path.join(root_dir, "server side"))
+    client_dir = os.path.abspath(os.path.join(root_dir, "client side"))
 
     @app.route("/")
-    def serve_frontend():
-        return send_from_directory(app.static_folder, "index.html")
+    def serve_landing_page():
+        landing_file = os.path.join(root_dir, "index.html")
+        if os.path.exists(landing_file):
+            return send_from_directory(root_dir, "index.html")
+        return send_from_directory(server_dir, "index.html")
 
     @app.route("/client/")
     @app.route("/client/<path:filename>")
+    @app.route("/client side/<path:filename>")
     def serve_client_app(filename="index.html"):
-        if os.path.exists(os.path.join(client_side_folder, filename)):
-            return send_from_directory(client_side_folder, filename)
-        return send_from_directory(client_side_folder, "index.html")
+        if os.path.exists(os.path.join(client_dir, filename)):
+            return send_from_directory(client_dir, filename)
+        return send_from_directory(client_dir, "index.html")
+
+    @app.route("/server/")
+    @app.route("/server/<path:filename>")
+    @app.route("/server side/<path:filename>")
+    def serve_server_app(filename="index.html"):
+        if os.path.exists(os.path.join(server_dir, filename)):
+            return send_from_directory(server_dir, filename)
+        return send_from_directory(server_dir, "index.html")
 
     @app.route("/health", methods=["GET"])
     def health_check():
@@ -70,6 +84,8 @@ if __name__ == "__main__":
     print("===========================================================")
     print(" RESERVOIR TELEMETRY BACKEND ACTIVE")
     print(f" Running on http://{Config.HOST}:{Config.PORT}")
-    print(f" Citizen App available at: http://{Config.HOST}:{Config.PORT}/client/")
+    print(f" Landing Page:  http://{Config.HOST}:{Config.PORT}/")
+    print(f" Admin Portal:  http://{Config.HOST}:{Config.PORT}/server side/login.html")
+    print(f" Citizen App:   http://{Config.HOST}:{Config.PORT}/client side/index.html")
     print("===========================================================")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
