@@ -38,10 +38,10 @@ An end-to-end software platform for real-time dam safety monitoring, flood risk 
 
 ## 👥 4-Person Role Division
 
-1. **Person 1 — Data & IoT Simulation (`data/`)**: Synthetic IoT data generator (`generate_data.py`), dataset cleaning (`preprocess.py`), and CSV storage (`dam_data.csv`).
-2. **Person 2 — AI / Machine Learning (`ml/`)**: Model training pipeline (`train_model.py`), Random Forest classification model (`model.pkl`), prediction engine (`predict.py`), time-to-critical equation ($T_{\text{critical}} = \frac{H_{\text{max}} - h(t)}{dh/dt}$), and evaluation metrics (`evaluate.py`).
-3. **Person 3 — Backend & Database (`backend/`, `database/`)**: Flask REST API server (`app.py`), route blueprints (`sensor.py`, `prediction.py`, `alerts.py`, `settings.py`), and SQLite/MySQL database layer (`database.py`, `schema.sql`).
-4. **Person 4 — Frontend Dashboard (`index.html`, `css/`, `js/`)**: Responsive glassmorphic UI, Chart.js telemetry charts, simulator playground, Web Audio siren synthesizer, and `js/api.js` backend integration.
+1. **Person 1 (Data & IoT Simulation - `data/`)**: Synthetic IoT data generator (`generate_data.py`), dataset cleaning (`preprocess.py`), and CSV storage (`dam_data.csv`).
+2. **Person 2 (AI / Machine Learning - `ml/`)**: Model training pipeline (`train_model.py`), Random Forest classification model (`model.pkl`), prediction engine (`predict.py`), time-to-critical equation ($T_{\text{critical}} = \frac{H_{\text{max}} - h(t)}{dh/dt}$), and evaluation metrics (`evaluate.py`).
+3. **Person 3 (Backend & Database - `backend/`, `database/`)**: Flask REST API server (`app.py`), route blueprints (`sensor.py`, `prediction.py`, `alerts.py`, `settings.py`), and SQLite/MySQL database layer (`database.py`, `schema.sql`).
+4. **Person 4 (Frontend Dashboard - `index.html`, `css/`, `js/`)**: Operational monitoring interface, Chart.js telemetry charts, simulator playground, Web Audio siren synthesizer, and `js/api.js` backend integration.
 
 ---
 
